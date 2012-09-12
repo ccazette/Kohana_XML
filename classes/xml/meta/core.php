@@ -8,22 +8,21 @@
  *      XML_Meta_Core class. This class contains XML drivers metadata
  */
 
- class XML_Meta_Core
- {
+class XML_Meta_Core {
 	/**
 	 * @var array assoc array alias => $node_name
 	 * This is used to abstract the node names
 	 */
 	protected $nodes = array();
-	
+
 	/**
 	 * @var array whole node configuration array
 	 * array("node_name" => array(
-	 * 								// Effective node name in the XML document. 
+	 * 								// Effective node name in the XML document.
 	 * 								// This name is abstracted and "node_name" is always used when dealing with the object.
 	 * 								"node" => "effective_node_name",
 	 * 								// Defines a namespace URI for this node
-	 * 								"namespace" => "http://www.namespace.uri", 
+	 * 								"namespace" => "http://www.namespace.uri"
 	 * 								// Defines a prefix for the namespace above. If not defined, namespace is interpreted as a default namespace
 	 * 								"prefix" => "ns",
 	 * 								// Defines a callback function to filter/normalize the value
@@ -35,12 +34,12 @@
 	 * 		)
 	 */
 	protected $nodes_config = array();
-	
+
 	/**
 	 * @var string content type for HTML headers
 	 */
 	protected $content_type;
-	
+
 	/**
 	 * @var boolean whether the object is initialized
 	 */
@@ -61,7 +60,7 @@
 				$name = $this->nodes_config[$name];
 			}
 		}
-		
+
 		return Arr::get($this->nodes, $name, $name);
 	}
 
@@ -73,7 +72,7 @@
 	 * @param object $name node name
 	 * @return meta value or NULL if not set
 	 */
-	public function get($key, $name) 
+	public function get($key, $name)
 	{
 		$name = $this->alias($name);
 
@@ -91,7 +90,7 @@
 	 * nodes(array("node_name" => array("namespace" => "http://www.namespace.uri", "prefix" => "ns", "filter" => "filter_function_name", "attributes" => array("default_attribute1" => "value")))),
 	 * OR to set up node alias names :
 	 * nodes(array("alias" => "node_name"));
-	 * 
+	 *
 	 * @param array $nodes array formatted as mentionned above
 	 * @param bool $overwrite [optional] Overwrite current values if they are set ?
 	 * @return object $this
@@ -99,18 +98,18 @@
 	public function nodes(Array $nodes)
 	{
 		$this->nodes_config = $this->_initialized ?
-									array_merge($nodes, $this->nodes_config) : 
+									array_merge($nodes, $this->nodes_config) :
 									array_merge($this->nodes_config, $nodes);
-									
+
 		$this->generate_nodes_map();
-		
+
 		return $this;
 	}
 
 
 	/**
 	 * Sets the content type for headers
-	 * @param string $type 
+	 * @param string $type
 	 * @return object $this
 	 */
 	public function content_type($type = NULL)
@@ -119,8 +118,8 @@
 		{
 			$this->content_type = $this->_initialized ?
 									$type :
-									$this->content_type ? 
-											$this->content_type : 
+									$this->content_type ?
+											$this->content_type :
 											$type;
 		}
 		else
@@ -130,20 +129,20 @@
 
 		return $this;
 	}
-	
-	
+
+
 	/**
 	 * Returns the key name corresponding to a node name
 	 * This is used when using as_array(), to return array keys corresponding to the node names
 	 * @param object $node_name
-	 * @return 
+	 * @return
 	 */
 	public function key($node_name)
 	{
 		// Extract the name if it is prefixed
 		$expl = explode(":", $node_name);
 		$node_name = count($expl) > 1 ? end($expl) : current($expl);
-		
+
 		if (in_array($node_name, $this->nodes))
 		{
 			return current(array_keys($this->nodes, $node_name));
@@ -151,7 +150,7 @@
 		return $node_name;
 	}
 
-	
+
 	/**
 	 * Generates - or re-generates the node map
 	 * @return object $this
@@ -172,7 +171,8 @@
 		$this->nodes = $map;
 		return $this;
 	}
-	
+
+
 	/**
 	 * Reports the Meta as initialized.
 	 * This basically allows Meta methods to overwrite existing value, if they are called explicitely
@@ -183,5 +183,4 @@
 		$this->_initialized = TRUE;
 		return $this;
 	}
-	
 }

@@ -8,8 +8,8 @@
  *      RSS2 driver
  */
 
-class XML_Driver_Rss2 extends XML
-{
+class XML_Driver_Rss2 extends XML {
+
 	public $root_node = 'rss';
 
 	protected static function initialize(XML_Meta $meta)

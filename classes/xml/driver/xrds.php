@@ -8,10 +8,10 @@
  *      XRDS driver. For Service Discovery.
  */
 
-class XML_Driver_XRDS extends XML
-{
+class XML_Driver_XRDS extends XML {
+
 	public $root_node = 'xrds:XRDS';
-						
+
 	protected static function initialize(XML_Meta $meta)
 	{
 		$meta	->content_type("application/xrds+xml")
@@ -24,8 +24,8 @@ class XML_Driver_XRDS extends XML
 								)
 						);
 	}
-								
-								
+
+
 	public function add_service($type, $uri, $priority = NULL)
 	{
 		if (! is_null($priority))
@@ -36,20 +36,20 @@ class XML_Driver_XRDS extends XML
 		{
 			$priority = array();
 		}
-		
+
 		$service_node = $this->add_node("Service", NULL, $priority);
 
 		if (! is_array($type))
 		{
 			$type = array($type);
 		}
-		
+
 		foreach ($type as $t)
 		{
 			$service_node->add_node("Type", $t);
 		}
 		$service_node->add_node("URI", $uri);
-		
+
 		return $service_node;
 	}
 }

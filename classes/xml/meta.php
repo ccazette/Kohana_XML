@@ -8,5 +8,4 @@
  *      XML_Meta class. Use this to override XML_Meta_Core
  */
 
- class XML_Meta extends XML_Meta_Core
- {}
+class XML_Meta extends XML_Meta_Core {}

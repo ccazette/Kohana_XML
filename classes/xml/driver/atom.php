@@ -8,8 +8,8 @@
  *      Atom driver
  */
 
-class XML_Driver_Atom extends XML
-{
+class XML_Driver_Atom extends XML {
+
 	public $root_node = 'feed';
 
 

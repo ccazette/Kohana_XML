@@ -8,8 +8,7 @@
  *      XML_Core class.
  */
 
- class XML_Core
- {
+class XML_Core {
 	/**
 	 * @var string XML document version
 	 */
@@ -77,8 +76,8 @@
 			return new XML($element, $root_node);
 		}
 	}
-	
-	
+
+
 	/**
 	 * Class constructor. You should use the factory instead.
 	 * @param string $element [optional] What to construct from. Could be some xml string, a file name, or a DOMNode
@@ -136,10 +135,10 @@
 				// Create the root node
 				$root_node = $this->dom_doc->createElement($this->root_node);
 			}
-			
+
 			// Append the root node to the object DOMDocument, and set the resulting DOMNode as it's node
 			$this->dom_node = $this->dom_doc->appendChild($root_node);
-			
+
 			// Add other attributes
 			$this->add_attributes($this->dom_node);
 		}
@@ -159,31 +158,24 @@
 	 * @return XML instance for the node that's been added.
 	 */
 	public function add_node($name, $value = NULL, $attributes = array())
-	{	
+	{
 		// Trim the name
 		$name = trim($name);
-		
+
 		// Create the element
 		$node = $this->create_element($name);
 
 		// Add the attributes
 		$this->add_attributes($node, $attributes);
-		
+
 		// Add the value if provided
 		if ($value !== NULL)
-		{			
-			$value = strval($this->filter($name, $value, &$node));
-			
-			if (str_replace(array('<', '>', '&'), "", $value) === $value)
-			{
-				// Value is valid CDATA, let's add it as a new text node
-				$value = $this->dom_doc->createTextNode($value);
-			}
-			else
-			{
-				// We shall create a CDATA section to wrap the text provided
-				$value = $this->dom_doc->createCDATASection($value);
-			}
+		{
+			$value = strval($this->filter($name, $value, $node));
+
+			// Value is valid CDATA, let's add it as a new text node
+			$value = $this->dom_doc->createTextNode($value);
+
 			$node->appendChild($value);
 		}
 
@@ -207,7 +199,7 @@
 		if ( ! isset($this->$value))
 		{
 			$node = current($this->get($value));
-			
+
 			if ($node instanceof XML)
 			{
 				// Return the whole XML document
@@ -231,7 +223,7 @@
 	public function get($value, $as_array = FALSE)
 	{
 		$return = array();
-		
+
 		$value = $this->meta()->alias($value);
 
 		foreach ($this->dom_node->getElementsByTagName($value) as $item)
@@ -264,9 +256,9 @@
 	public function xpath($query, $as_array = TRUE)
 	{
 		$return = array();
-		
+
 		$xpath = new DOMXPath($this->dom_doc);
-		
+
 		foreach ($xpath->query($query) as $item)
 		{
 			if ($as_array)
@@ -291,9 +283,9 @@
 	/**
 	 * Exports the document as a multi-dimensional array.
 	 * Handles element with the same name.
-	 * 
+	 *
 	 * Root node is ignored, as it is known and available in the driver.
-	 * Example : 
+	 * Example :
 	 * <node_name attr_name="val">
 	 * 		<child_node_name>
 	 * 			value1
@@ -302,17 +294,17 @@
 	 * 			value2
 	 * 		</child_node_name>
 	 * </node_name>
-	 * 
+	 *
 	 * Here's the resulting array structure :
 	 * array ("node_name" => array(
-	 * 					// array of nodes called "node_name"	
+	 * 					// array of nodes called "node_name"
 	 * 					0 => array(
 	 *							// Attributes of that node
 	 *							"xml_attributes" => array(
 	 *											"attr_name" => "val",
 	 *													)
 	 *							// node contents
-	 * 							"child_node_name" => array( 
+	 * 							"child_node_name" => array(
 	 * 												// array of nodes called "child_node_name"
 	 * 												0 => value1,
 	 * 												1 => value2,
@@ -323,9 +315,9 @@
 	public function as_array()
 	{
 		$dom_element = $this->dom_node;
-		
+
 		$return = array();
-		
+
 		// This function is run on a whole XML document and this is the root node.
 		// That root node shall be ignored in the array as it driven by the driver and handles document namespaces.
 		foreach($dom_element->childNodes as $dom_child)
@@ -341,7 +333,7 @@
 				}
 			}
 		}
-		
+
 		return $return;
 	}
 
@@ -374,7 +366,7 @@
 				if ($dom_child->nodeType === XML_ELEMENT_NODE)
 				{
 					$child = $this->_as_array($dom_child);
-	
+
 					foreach ($child as $key=>$val)
 					{
 						$object_element[$node_name][$key][]=$val;
@@ -386,7 +378,7 @@
 		// Get attributes
 		if ($dom_node->hasAttributes())
 		{
-	 		$object_element[$dom_node->nodeName]['xml_attributes'] = array();
+	 		$object_element[$node_name] = array('xml_attributes' => array());
 			foreach($dom_node->attributes as $att_name => $dom_attribute)
 			{
 				// Get the desired name for this attribute
@@ -451,13 +443,13 @@
 					// Create a new element with the key as the element name.
 					// Create the element corresponding to the key
 					$node = $this->create_element($index);
-					
+
 					// Add the driver attributes
 					$this->add_attributes($node);
 
 					// Append it
 					$dom_element->appendChild($node);
-					
+
 					// Treat the array by recursion
 					$this->_from_array($mixed_element, $node);
 				}
@@ -466,7 +458,7 @@
 		elseif ($mixed)
 		{
 			// This is a string value that shall be appended as such
-			$mixed = $this->filter($dom_element->tagName, $mixed, &$dom_element);
+			$mixed = $this->filter($dom_element->tagName, $mixed, $dom_element);
 			$dom_element->appendChild($this->dom_doc->createTextNode($mixed));
 		}
 	}
@@ -499,7 +491,7 @@
 		// Import the node, and all its children, to the document
 		$node = $this->dom_doc->importNode($xml->dom_node, TRUE);
 		$this->dom_node->appendChild($node);
-		
+
 		return $this;
 	}
 
@@ -605,7 +597,7 @@
 	protected function filter($name, $value, &$node)
 	{
 		$name = $this->meta()->alias($name);
-		
+
 		if ($this->meta()->get("filter", $name))
 		{
 			return call_user_func(array($this, $this->meta()->get("filter", $name)), $value, $node);
